@@ -7,6 +7,7 @@ import com.database_testing.FirstSQLDatabaseConnect.repositories.TransactionRepo
 import com.database_testing.FirstSQLDatabaseConnect.services.UserService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,7 +16,8 @@ import java.util.stream.StreamSupport;
 @Service
 public class UserServiceImpl implements UserService {
     UserRepository userRepository;
-    public UserServiceImpl(UserRepository userRepository, TransactionRepository transactionRepository){
+
+    public UserServiceImpl(UserRepository userRepository, TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
     }
 
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserEntity> getAllUsers() {
         return StreamSupport.stream(
-        userRepository.findAll().spliterator(),false)
+                        userRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
     }
 
@@ -35,4 +37,39 @@ public class UserServiceImpl implements UserService {
     public boolean userExists(String rfidcode) {
         return userRepository.existsById(rfidcode);
     }
+
+    @Override
+    public boolean sufficientBalance(Integer amount, String rfidcode) {
+        return userRepository.findById(rfidcode)
+                .map(existingUser -> existingUser.getBalance() >= amount)
+                .orElse(false);
+    }
+
+    @Override
+    public Optional<UserEntity> getUser(String rfidcode) {
+        return userRepository.findById(rfidcode);
+    }
+
+    @Override
+    public void deductBalance(String rfidcode, Integer amount) {
+        userRepository.findById(rfidcode).map(foundUser->{
+            foundUser.setBalance(foundUser.getBalance()-amount);
+            userRepository.save(foundUser);
+            return null;
+        });
+    }
+
+    @Override
+    public void removeUser(String rfidcode) {
+        userRepository.findById(rfidcode).map(foundUser->{
+            userRepository.delete(foundUser);
+            return null;
+        });
+    }
+
+    @Override
+    public void deleteAllUsers() {
+        userRepository.deleteAll();
+    }
+
 }

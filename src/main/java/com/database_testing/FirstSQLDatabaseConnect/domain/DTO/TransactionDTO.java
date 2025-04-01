@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,7 +13,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class TransactionDTO {
-    private String isbn;
+    private String id;
+    private Integer amount;
     private LocalDateTime dateTime;
     private UserDTO user;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class createInput {
+        private String rfidcode;
+        private Integer amount;
+    }
 }

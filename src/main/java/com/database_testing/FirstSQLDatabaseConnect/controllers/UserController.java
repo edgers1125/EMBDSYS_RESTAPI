@@ -23,12 +23,11 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
-    @PutMapping(path = "/users/rfidcode")
+    @PutMapping(path = "/users/{rfidcode}")
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO, @PathVariable ("rfidcode") String rfidcode){
         if(userService.userExists(rfidcode)){
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-
         userDTO.setRfidcode(rfidcode);
         UserEntity userEntity = userMapper.mapFrom(userDTO);
         userEntity = userService.createUser(userEntity,rfidcode);
@@ -38,6 +37,25 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getAllUsers(){
         List<UserEntity> users = userService.getAllUsers();
         return new ResponseEntity<>(users.stream().map(userMapper::mapTo).collect(Collectors.toList()),HttpStatus.OK);
+    }
+    @GetMapping(path = "/users/{rfidcode}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable("rfidcode") String rfidcode){
+        return userService.getUser(rfidcode).map(userEntity1 -> {
+            return new ResponseEntity<>(userMapper.mapTo(userEntity1),HttpStatus.OK);
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    @DeleteMapping(path = "/users")
+    public ResponseEntity<?> deleteAllUsers(){
+        userService.deleteAllUsers();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @DeleteMapping(path = "/users/{rfidcode}")
+    public ResponseEntity<?> deleteAllUsers(@PathVariable("rfidcode") String rfidcode){
+        if(!userService.userExists(rfidcode)){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        userService.removeUser(rfidcode);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
