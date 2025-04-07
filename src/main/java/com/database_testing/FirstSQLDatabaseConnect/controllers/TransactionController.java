@@ -36,7 +36,6 @@ public class TransactionController {
         userService.deductBalance(createInput.getRfidcode(),createInput.getAmount());
         TransactionEntity transactionEntity = transactionService.createTransaction(createInput);
         return new ResponseEntity<>(transactionMapper.mapTo(transactionEntity),HttpStatus.CREATED);
-
     }
     @GetMapping("/transactions")
     public ResponseEntity<List<TransactionDTO>> getAllTransactions(){

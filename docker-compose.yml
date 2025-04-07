@@ -6,3 +6,11 @@ services:
     restart: always
     environment:
       POSTGRES_PASSWORD: wahoothoots
+    # Adding network configuration for local network accessibility
+    networks:
+      - postgres-network
+
+# Define the network to ensure proper connectivity
+networks:
+  postgres-network:
+    driver: bridge

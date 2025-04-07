@@ -50,7 +50,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @DeleteMapping(path = "/users/{rfidcode}")
-    public ResponseEntity<?> deleteAllUsers(@PathVariable("rfidcode") String rfidcode){
+    public ResponseEntity<?> deleteUser(@PathVariable("rfidcode") String rfidcode){
         if(!userService.userExists(rfidcode)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
